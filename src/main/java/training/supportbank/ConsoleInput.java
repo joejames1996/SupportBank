@@ -21,6 +21,7 @@ public class ConsoleInput
             catch(Exception e)
             {
                 System.out.println(e.toString());
+                Main.LOGGER.error(e);
             }
         }
     }
@@ -29,27 +30,20 @@ public class ConsoleInput
     {
         String[] inputs = input.split("\\s");
 
-        switch(inputs[0].toLowerCase())
-        {
+        switch(inputs[0].toLowerCase()) {
             case "list":
-                if(inputs[1].equalsIgnoreCase("all"))
-                {
+                if (inputs[1].equalsIgnoreCase("all")) {
                     Account.printAllAccounts();
-                }
-                else
-                {
+                } else {
                     Pattern pattern = Pattern.compile(listRegex);
                     Matcher matcher = pattern.matcher(input);
-                    if(matcher.find())
-                    {
+                    if (matcher.find()) {
                         String name = matcher.group(1);
-                        if(name.isEmpty()) throw new Exception("No name given.");
-                        else
-                        {
+                        if (name.isEmpty()) throw new Exception("No name given.");
+                        else {
                             Account foundAccount = Account.findAccountFromName(name);
-                            if(foundAccount == null) throw new Exception("No account found for " + name + ".");
-                            else
-                            {
+                            if (foundAccount == null) throw new Exception("No account found for " + name + ".");
+                            else {
                                 Transaction.printAllTransactions(foundAccount);
                             }
                         }

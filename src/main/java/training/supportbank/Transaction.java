@@ -29,6 +29,7 @@ public class Transaction
         try
         {
             List csvContent = CSVFileReader.readCsv(Main.filePath);
+            int line = 2;
             String[] row = null;
             Date rowDate;
             String rowFromAccountName;
@@ -39,7 +40,7 @@ public class Transaction
             for(Object o : csvContent)
             {
                 row = (String[])o;
-                try
+                /*try
                 {
                     SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
                     rowDate = form.parse(row[0]);
@@ -55,14 +56,63 @@ public class Transaction
                 }
                 catch(Exception e)
                 {
-                    System.out.println(e.toString());
+                    Main.LOGGER.error(e);
+                }*/
+                try
+                {
+                    rowDate = parseRowDate(row[0]);
+                    rowFromAccountName = row[1];
+                    rowToAccountName = row[2];
+                    rowNarrative = row[3];
+                    rowAmount = parseRowAmount(row[4]);
+                    Account fromAccount = Account.changeAccountBalance(rowFromAccountName, (-rowAmount));
+                    Account toAccount = Account.changeAccountBalance(rowToAccountName, rowAmount);
+                    Transaction newTransaction = new Transaction(rowDate, fromAccount, toAccount, rowNarrative, rowAmount);
+                    transactions.add(newTransaction);
                 }
+                catch(Exception e)
+                {
+                    System.out.println(e.getMessage() + " on line " + line + " of " + Main.filePath);
+                    Main.LOGGER.error(e);
+                }
+
+                line++;
             }
         }
         catch(Exception e)
         {
             System.out.println(e.toString());
+            Main.LOGGER.error(e);
         }
+    }
+
+    private static Date parseRowDate(String s) throws Exception
+    {
+        Date d = null;
+        try
+        {
+            SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
+            d = form.parse(s);
+        }
+        catch(Exception e)
+        {
+            throw new Exception("Could not parse date: " + s);
+        }
+        return d;
+    }
+
+    private  static float parseRowAmount(String s) throws Exception
+    {
+        float a = 0.0f;
+        try
+        {
+            a = Float.parseFloat(s);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new Exception("Could not parse amount: " + s);
+        }
+        return a;
     }
 
     public static void printAllTransactions(Account account)
