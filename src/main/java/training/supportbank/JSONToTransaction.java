@@ -1,9 +1,6 @@
 package training.supportbank;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.Reader;
 import java.util.Date;
@@ -16,18 +13,31 @@ public class JSONToTransaction
         JsonElement tree = jp.parse(reader);
         JsonArray jsonArray = tree.getAsJsonArray();
 
+        buildFromJsonArray(jsonArray);
+    }
+
+    private static void buildFromJsonArray(JsonArray jsonArray)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Transaction.class, (JsonDeserializer<Transaction>) (jsonElement, type, jsonDeserializationContext) ->
+                {
+                    Transaction t = null;
+                    if(jsonElement.isJsonObject())
+                    {
+                        t = createTransactionFromJsonObject(jsonElement.getAsJsonObject());
+                    }
+                    return t;
+                });
+        Gson gson = gsonBuilder.create();
         for(JsonElement jsonElement : jsonArray)
         {
-            if(jsonElement.isJsonObject())
-            {
-                JsonObject transactionObject = jsonElement.getAsJsonObject();
-                createTransactionFromJsonObject(transactionObject);
-            }
+            Transaction.addNewTransaction(gson.fromJson(jsonElement, Transaction.class));
         }
     }
 
-    private static void createTransactionFromJsonObject(JsonObject transactionObject)
+    private static Transaction createTransactionFromJsonObject(JsonObject transactionObject)
     {
+        Transaction transaction = null;
         try
         {
             Date date = Transaction.parseRowDate(transactionObject.get("date").getAsString(), "yyyy-MM-dd");
@@ -35,8 +45,7 @@ public class JSONToTransaction
             String toAccount = transactionObject.get("toAccount").getAsString();
             String narrative = transactionObject.get("narrative").getAsString();
             float amount = Transaction.parseRowAmount(transactionObject.get("amount").getAsString());
-            Transaction transaction = new Transaction(date, fromAccount, toAccount, narrative, amount);
-            Transaction.addNewTransaction(transaction);
+            transaction = new Transaction(date, fromAccount, toAccount, narrative, amount);
         }
         catch(Exception e)
         {
@@ -44,5 +53,6 @@ public class JSONToTransaction
             System.out.println(transactionObject.toString());
             Main.LOGGER.error(e.toString());
         }
+        return transaction;
     }
 }
