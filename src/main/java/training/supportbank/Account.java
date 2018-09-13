@@ -16,7 +16,7 @@ public class Account
         this.currentMoney = currentMoney;
     }
 
-    public static Account findAccountFromName(String name) /*throws Exception*/
+    public static Account findAccountFromName(String name)
     {
         Account foundAccount = null;
         for(Account a : accounts)
@@ -27,7 +27,16 @@ public class Account
                 break;
             }
         }
-        //if(foundAccount == null) throw new Exception("No account found for " + name + ".");
+        return foundAccount;
+    }
+
+    public static Account findOrCreateAccountFromName(String name)
+    {
+        Account foundAccount = findAccountFromName(name);
+        if(foundAccount == null)
+        {
+            foundAccount = createAccount(name);
+        }
         return foundAccount;
     }
 
@@ -55,10 +64,11 @@ public class Account
         }
     }
 
-    public static void createAccount(String name)
+    public static Account createAccount(String name)
     {
         Account newAccount = new Account(name, 0.0f);
         accounts.add(newAccount);
+        return newAccount;
     }
 
     public float getCurrentMoney()

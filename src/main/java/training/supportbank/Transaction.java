@@ -24,7 +24,16 @@ public class Transaction
         this.amount = amount;
     }
 
-    public static void loadTransactions()
+    public Transaction(Date date, String fromAccount, String toAccount, String narrative, float amount)
+    {
+        this.date = date;
+        this.fromAccount = Account.findOrCreateAccountFromName(fromAccount);
+        this.toAccount = Account.findOrCreateAccountFromName(toAccount);
+        this.narrative = narrative;
+        this.amount = amount;
+    }
+
+    public static void loadTransactionsFromCsv()
     {
         try
         {
@@ -36,39 +45,20 @@ public class Transaction
             String rowToAccountName;
             String rowNarrative;
             float rowAmount;
-            //System.out.println("Date:\tFrom:\tTo:\tReason:\tAmount");
             for(Object o : csvContent)
             {
                 row = (String[])o;
-                /*try
-                {
-                    SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
-                    rowDate = form.parse(row[0]);
-                    rowFromAccountName = row[1];
-                    rowToAccountName = row[2];
-                    rowNarrative = row[3];
-                    rowAmount = Float.parseFloat(row[4]);
-                    //System.out.println(rowDate + "\t" + rowFromAccountName + "\t" + rowToAccountName + "\t" + rowNarrative + "\t£" + rowAmount);
-                    Account fromAccount = Account.changeAccountBalance(rowFromAccountName, (-rowAmount));
-                    Account toAccount = Account.changeAccountBalance(rowToAccountName, rowAmount);
-                    Transaction newTransaction = new Transaction(rowDate, fromAccount, toAccount, rowNarrative, rowAmount);
-                    transactions.add(newTransaction);
-                }
-                catch(Exception e)
-                {
-                    Main.LOGGER.error(e);
-                }*/
                 try
                 {
-                    rowDate = parseRowDate(row[0]);
+                    rowDate = parseRowDate(row[0], "dd/MM/yyyy");
                     rowFromAccountName = row[1];
                     rowToAccountName = row[2];
                     rowNarrative = row[3];
                     rowAmount = parseRowAmount(row[4]);
-                    Account fromAccount = Account.changeAccountBalance(rowFromAccountName, (-rowAmount));
-                    Account toAccount = Account.changeAccountBalance(rowToAccountName, rowAmount);
+                    Account fromAccount = Account.findOrCreateAccountFromName(rowFromAccountName);
+                    Account toAccount = Account.findOrCreateAccountFromName(rowToAccountName);
                     Transaction newTransaction = new Transaction(rowDate, fromAccount, toAccount, rowNarrative, rowAmount);
-                    transactions.add(newTransaction);
+                    addNewTransaction(newTransaction);
                 }
                 catch(Exception e)
                 {
@@ -86,12 +76,25 @@ public class Transaction
         }
     }
 
-    private static Date parseRowDate(String s) throws Exception
+    public static void loadTransactionsFromJson()
+    {
+        try
+        {
+            JSONToTransaction.parseJson(JSONFileReader.readJson(Main.filePath));
+
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.toString());
+        }
+    }
+
+    public static Date parseRowDate(String s, String pattern) throws Exception
     {
         Date d = null;
         try
         {
-            SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat form = new SimpleDateFormat(pattern);
             d = form.parse(s);
         }
         catch(Exception e)
@@ -101,7 +104,7 @@ public class Transaction
         return d;
     }
 
-    private  static float parseRowAmount(String s) throws Exception
+    public static float parseRowAmount(String s) throws Exception
     {
         float a = 0.0f;
         try
@@ -133,5 +136,12 @@ public class Transaction
     String formatTransactionAmount()
     {
         return String.format("£%.2f", this.amount);
+    }
+
+    public static void addNewTransaction(Transaction transaction)
+    {
+        transactions.add(transaction);
+        Account.changeAccountBalance(transaction.fromAccount.name, -transaction.amount);
+        Account.changeAccountBalance(transaction.toAccount.name, transaction.amount);
     }
 }
