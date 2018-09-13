@@ -41,6 +41,8 @@ public class JSONToTransaction
         catch(Exception e)
         {
             System.out.println("Could not parse JSON file: " + e.toString());
+            System.out.println(transactionObject.toString());
+            Main.LOGGER.error(e.toString());
         }
     }
 }

@@ -86,6 +86,7 @@ public class Transaction
         catch(Exception e)
         {
             System.out.println(e.toString());
+            Main.LOGGER.error(e.toString());
         }
     }
 
