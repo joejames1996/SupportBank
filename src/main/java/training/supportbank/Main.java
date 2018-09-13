@@ -10,8 +10,13 @@ public class Main
 
     public static void main(String args[])
     {
-        Transaction.loadTransactionsFromJson();
-
         ConsoleInput.readInput();
+        onLoad();
+    }
+
+    public static void onLoad()
+    {
+        Transaction.transactions.clear();
+        Account.accounts.clear();
     }
 }

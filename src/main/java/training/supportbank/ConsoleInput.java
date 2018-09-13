@@ -34,7 +34,9 @@ public class ConsoleInput
             case "list":
                 if (inputs[1].equalsIgnoreCase("all")) {
                     Account.printAllAccounts();
-                } else {
+                }
+                else
+                {
                     Pattern pattern = Pattern.compile(listRegex);
                     Matcher matcher = pattern.matcher(input);
                     if (matcher.find()) {
@@ -49,6 +51,10 @@ public class ConsoleInput
                         }
                     }
                 }
+                break;
+            case "import":
+                FileImporter.importFile(input);
+                break;
         }
     }
 }
