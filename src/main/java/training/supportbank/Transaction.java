@@ -90,6 +90,11 @@ public class Transaction
         }
     }
 
+    public static void loadTransactionsFromXml()
+    {
+        XMLFileReader.readXml();
+    }
+
     public static Date parseRowDate(String s, String pattern) throws Exception
     {
         Date d = null;
@@ -125,11 +130,11 @@ public class Transaction
         {
             if(t.fromAccount == account)
             {
-                System.out.println(t.fromAccount.name + " owes " + t.formatTransactionAmount() + " to " + t.toAccount.name + " for " + t.narrative);
+                System.out.println("(" + t.date + ") " + t.fromAccount.name + " owes " + t.formatTransactionAmount() + " to " + t.toAccount.name + " for " + t.narrative);
             }
             else if(t.toAccount == account)
             {
-                System.out.println(t.toAccount.name + " is owed " + t.formatTransactionAmount() + " from " + t.fromAccount.name + " for " + t.narrative);
+                System.out.println("(" + t.date + ") " + t.toAccount.name + " is owed " + t.formatTransactionAmount() + " from " + t.fromAccount.name + " for " + t.narrative);
             }
         }
     }

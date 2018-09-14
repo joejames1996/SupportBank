@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class FileImporter
 {
-    private static String fileRegex = "[^\0-\37\\s*<>?|]+\\.(csv|json)";
+    private static String fileRegex = "[^\0-\37\\s*<>?|]+\\.(csv|json|xml)";
 
     public static void importFile(String fileName)
     {
@@ -23,6 +23,10 @@ public class FileImporter
                     break;
                 case "json":
                     Transaction.loadTransactionsFromJson();
+                    break;
+                case "xml":
+                    Transaction.loadTransactionsFromXml();
+                    break;
             }
         }
     }
