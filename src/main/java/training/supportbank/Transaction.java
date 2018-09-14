@@ -1,6 +1,5 @@
 package training.supportbank;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class Transaction
         {
             List csvContent = CSVFileReader.readCsv(Main.filePath);
             int line = 2;
-            String[] row = null;
+            String[] row;
             Date rowDate;
             String rowFromAccountName;
             String rowToAccountName;
@@ -50,11 +49,11 @@ public class Transaction
                 row = (String[])o;
                 try
                 {
-                    rowDate = parseRowDate(row[0], "dd/MM/yyyy");
+                    rowDate = Parser.parseRowDate(row[0], "dd/MM/yyyy");
                     rowFromAccountName = row[1];
                     rowToAccountName = row[2];
                     rowNarrative = row[3];
-                    rowAmount = parseRowAmount(row[4]);
+                    rowAmount = Parser.parseRowAmount(row[4]);
                     Account fromAccount = Account.findOrCreateAccountFromName(rowFromAccountName);
                     Account toAccount = Account.findOrCreateAccountFromName(rowToAccountName);
                     Transaction newTransaction = new Transaction(rowDate, fromAccount, toAccount, rowNarrative, rowAmount);
@@ -93,35 +92,6 @@ public class Transaction
     public static void loadTransactionsFromXml()
     {
         XMLFileReader.readXml();
-    }
-
-    public static Date parseRowDate(String s, String pattern) throws Exception
-    {
-        Date d = null;
-        try
-        {
-            SimpleDateFormat form = new SimpleDateFormat(pattern);
-            d = form.parse(s);
-        }
-        catch(Exception e)
-        {
-            throw new Exception("Could not parse date: " + s);
-        }
-        return d;
-    }
-
-    public static float parseRowAmount(String s) throws Exception
-    {
-        float a = 0.0f;
-        try
-        {
-            a = Float.parseFloat(s);
-        }
-        catch(NumberFormatException e)
-        {
-            throw new Exception("Could not parse amount: " + s);
-        }
-        return a;
     }
 
     public static void printAllTransactions(Account account)

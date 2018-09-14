@@ -25,9 +25,4 @@ public class DateManager
 
         return c.getTime();
     }
-
-    public static Date parseDateString(String dateString, String datePattern) throws Exception
-    {
-        return new Date();
-    }
 }
