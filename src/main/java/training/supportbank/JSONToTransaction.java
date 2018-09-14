@@ -9,6 +9,20 @@ public class JSONToTransaction
 {
     private static Gson gson;
 
+    public static void loadTransactionsFromJson()
+    {
+        try
+        {
+            parseJson(JSONFileReader.readJson(Main.filePath));
+
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.toString());
+            Main.LOGGER.error(e.toString());
+        }
+    }
+
     public static void parseJson(Reader reader)
     {
         JsonParser jp = new JsonParser();

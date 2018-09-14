@@ -19,13 +19,13 @@ public class FileImporter
             switch(ext)
             {
                 case "csv":
-                    Transaction.loadTransactionsFromCsv();
+                    CSVToTransaction.loadTransactionsFromCsv();
                     break;
                 case "json":
-                    Transaction.loadTransactionsFromJson();
+                    JSONToTransaction.loadTransactionsFromJson();
                     break;
                 case "xml":
-                    Transaction.loadTransactionsFromXml();
+                    XMLToTransaction.loadTransactionsFromXml();
                     break;
             }
         }
